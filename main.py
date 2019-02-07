@@ -1,11 +1,4 @@
 
-#import tensorflow as tf
-#import matplotlib.pyplot as plt
-#from keras.preprocessing.image import load_img
-#from keras import models
-
-
-
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -30,13 +23,25 @@ from tensorflow.python.keras import backend as K
 
 
 
-content_path = "large/space.jpg"
-style_path = "large/CoDwar.jpg"
+
+# Content layer where will pull our feature maps
+content_layers = [
+    'block5_conv2'
+  ] 
+
+# Style layer we are interested in
+style_layers = [
+    'block1_conv1',
+    'block2_conv1',
+    'block3_conv1', 
+    'block4_conv1', 
+    'block5_conv1'
+  ]
+
+num_content_layers = len(content_layers)
+num_style_layers = len(style_layers)
 
 
-
-tf.enable_eager_execution()
-print("Eager execution: {}".format(tf.executing_eagerly()))
 
 
 
@@ -63,51 +68,6 @@ def imshow(img, title=None):
   if title is not None:
     plt.title(title)
   plt.imshow(out)
-
-
-## nvidia developer logon:
-## APMTqZY5v6t28mx
-
-
- 
-#Here are the content and style images we will use: 
-plt.figure(figsize=(10,10))
-
-content = load_img(content_path).astype('uint8')
-style = load_img(style_path).astype('uint8')
-
-plt.subplot(1, 2, 1)
-imshow(content,'Content Image')
-
-plt.subplot(1, 2, 2)
-imshow(style,'Style Image')
-plt.show()
-
-
-
-
-# Content layer where will pull our feature maps
-content_layers = [
-    'block5_conv2'
-  ] 
-
-# Style layer we are interested in
-style_layers = [
-    'block1_conv1',
-    'block2_conv1',
-    'block3_conv1', 
-    'block4_conv1', 
-    'block5_conv1'
-  ]
-
-num_content_layers = len(content_layers)
-num_style_layers = len(style_layers)
-
-
-
-
-
-
 
 
 
@@ -375,19 +335,6 @@ def run_style_transfer(content_path,
 
 
 
-best, best_loss = run_style_transfer(content_path, 
-                                     style_path,num_iterations=1000)
-
-
-
-#print('#########################################')
-#print (best)
-
-best = Image.fromarray(deprocess_img(best))
-best.save("out.jpg")
-
-
-
 
 def show_results(best_img, content_path, style_path, show_large_final=True):
   plt.figure(figsize=(10, 5))
@@ -409,18 +356,54 @@ def show_results(best_img, content_path, style_path, show_large_final=True):
 
 
 
+def show_incoming(content_path,style_path):
+  plt.figure(figsize=(10,10))
+
+  content = load_img(content_path).astype('uint8')
+  style   = load_img(style_path).astype('uint8')
+
+  plt.subplot(1, 2, 1)
+  imshow(content,'Content Image')
+
+  plt.subplot(1, 2, 2)
+  imshow(style,'Style Image')
+  plt.show()
 
 
-show_results(best, content_path, style_path)
+
+def do_it_all(content_path,style_path,niterations):
+
+  tf.enable_eager_execution()
+  print("Eager execution: {}".format(tf.executing_eagerly()))
+
+  #Here are the content and style images we will use: 
+  content = load_img(content_path).astype('uint8')
+  style   = load_img(style_path).astype('uint8')
+
+  best, best_loss = run_style_transfer(content_path,style_path,num_iterations=niterations)
+  best = Image.fromarray(deprocess_img(best))
+  return best
 
 
 
+##################
+## nvidia developer logon:
+## APMTqZY5v6t28mx
 
 
+style_path = "img/comics.jpg"
+niterations = 1000
+
+for n in range(848):
+  content_path = "video/scene{:04d}.jpeg".format(n+1)
+  out_path     = "out/scene{:04d}.jpeg".format(n+1)
+  final = do_it_all(content_path,style_path,niterations)
+  final.save(out_path)
 
 
-
-
-
+#show_incoming(content_path,style_path)
+#final = do_it_all(content_path,style_path,niterations)
+#final.save("final.jpg")
+#show_results(final, content_path, style_path)
 
 
