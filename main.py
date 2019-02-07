@@ -387,8 +387,6 @@ def do_it_all(content_path,style_path,niterations):
 
 
 ##################
-## nvidia developer logon:
-## APMTqZY5v6t28mx
 
 
 style_path = "img/comics.jpg"
